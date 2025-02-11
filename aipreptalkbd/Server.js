@@ -1,73 +1,48 @@
 const express = require("express");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const app = express();
-const PORT = 5000;
-const JWT_SECRET = "your_jwt_secret"; // Hardcoded for simplicity (change in production)
 
-app.use(cors());
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-// Temporary user storage (resets when the server restarts)
-let users = [];
+// Temporary storage for users (resets when server restarts)
+const users = [];
 
 // Signup Route
-app.post("/signup", async (req, res) => {
-    const { fullName, email, password } = req.body;
+app.post("/api/auth/signup", (req, res) => {
+  const { fullName, email, password } = req.body;
 
-    if (!fullName || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
+  // Check if email already exists
+  if (users.some((user) => user.email === email)) {
+    return res.status(400).json({ message: "Email already in use. Try logging in." });
+  }
 
-    // Check if the email is already registered
-    const existingUser = users.find(user => user.email === email);
-    if (existingUser) {
-        return res.status(400).json({ message: "Email already in use" });
-    }
-
-    // Hash the password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Store user details
-    users.push({ fullName, email, password: hashedPassword });
-    
-    res.status(201).json({ message: "Signup successful!" });
+  // Store new user
+  users.push({ fullName, email, password });
+  res.status(201).json({ message: "User registered successfully" });
 });
 
 // Login Route
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+app.post("/api/auth/login", (req, res) => {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
+  // Check if user exists
+  const user = users.find((user) => user.email === email && user.password === password);
+  if (!user) {
+    return res.status(401).json({ message: "Invalid email or password" });
+  }
 
-    // Find user by email
-    const user = users.find(u => u.email === email);
-    if (!user) {
-        return res.status(400).json({ message: "Invalid email or password" });
-    }
-
-    // Compare hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ message: "Invalid email or password" });
-    }
-
-    // Generate a JWT token
-    const token = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: "1h" });
-    
-    res.status(200).json({ message: "Login successful!", token });
+  res.json({ message: "Login successful", user: { fullName: user.fullName, email: user.email } });
 });
 
-// Get Users Route (For testing purposes)
-app.get("/users", (req, res) => {
-    res.json(users);
+// Chat Route (Placeholder)
+app.post("/api/chat", (req, res) => {
+  const { message } = req.body;
+  res.json({ response: `You said: ${message}` });
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Start Server
+const PORT = 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

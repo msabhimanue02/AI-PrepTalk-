@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
 
 export default function Login() {
@@ -7,6 +7,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [serverMessage, setServerMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate(); // For redirecting to Chat.js
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,21 +32,22 @@ export default function Login() {
     setIsSubmitting(true);
     setServerMessage("");
 
-    fetch("http://localhost:5000/login", {
+    fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.token) {
-          setServerMessage(" Login successful! Redirecting...");
-          setTimeout(() => (window.location.href = "/dashboard"), 2000);
+        if (data.message === "Login successful") {
+          localStorage.setItem("user", JSON.stringify(data.user)); // Store user data
+          setServerMessage("Login successful! Redirecting...");
+          setTimeout(() => navigate("/chat"), 2000); // Redirect to Chat.js
         } else {
-          setServerMessage(data.message || " Login failed");
+          setServerMessage(data.message || "Login failed");
         }
       })
-      .catch(() => setServerMessage(" Something went wrong. Please try again."))
+      .catch(() => setServerMessage("Something went wrong. Please try again."))
       .finally(() => setIsSubmitting(false));
   };
 

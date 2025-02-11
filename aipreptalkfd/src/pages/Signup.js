@@ -14,6 +14,7 @@ export default function Signup() {
 
   const validateForm = () => {
     const newErrors = {};
+
     if (!form.fullName.trim()) newErrors.fullName = "Full Name is required";
     else if (form.fullName.length < 3) newErrors.fullName = "Full Name must be at least 3 characters";
 
@@ -37,22 +38,26 @@ export default function Signup() {
     setLoading(true);
     setServerMessage("");
 
-    fetch("http://localhost:5000/signup", {
+    fetch("http://localhost:5000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fullName: form.fullName, email: form.email, password: form.password }),
+      body: JSON.stringify({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.message === "Signup successful!") {
-          setServerMessage(" Signup successful! Redirecting...");
-          setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
+        if (data.message === "User registered successfully") {
+          setServerMessage("✅ Signup successful! Redirecting...");
           setTimeout(() => (window.location.href = "/login"), 2000);
+          setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
         } else {
-          setServerMessage(` ${data.message}`);
+          setServerMessage(`❌ ${data.message}`);
         }
       })
-      .catch(() => setServerMessage(" Something went wrong. Try again."))
+      .catch(() => setServerMessage("❌ Something went wrong. Try again."))
       .finally(() => setLoading(false));
   };
 
@@ -78,7 +83,9 @@ export default function Signup() {
 
         {serverMessage && <p className="server-message">{serverMessage}</p>}
 
-        <p className="auth-footer">Already have an account? <Link to="/Login">Login</Link></p>
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </div>
     </div>
   );
