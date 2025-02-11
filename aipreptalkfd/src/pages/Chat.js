@@ -1,64 +1,72 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import "../styles/Chat.css";
+import { FaHistory, FaMoon, FaSun, FaExpand, FaCompress } from "react-icons/fa";
 
-export default function Chat() {
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Welcome to AI-PrepTalk! What job role are you applying for?" }
-  ]);
-  const [message, setMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const chatEndRef = useRef(null);
+const Chat = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
-  // Scroll to latest message
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Handle user message submission
-  const sendMessage = () => {
-    if (!message.trim()) return;
-
-    const userMessage = { sender: "user", text: message };
-    setMessages((prev) => [...prev, userMessage]);
-
-    setIsTyping(true);
-    setMessage("");
-
-    fetch("http://localhost:5000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setMessages((prev) => [...prev, { sender: "bot", text: data.response }]);
-      })
-      .catch((error) => console.error("Error:", error))
-      .finally(() => setIsTyping(false));
+  const handleSend = () => {
+    if (!input.trim()) return;
+    setMessages([...messages, { text: input, sender: "user" }, { text: "This is a bot response.", sender: "bot" }]);
+    setInput("");
   };
 
   return (
-    <div className="chat-container">
+    <div className={`chat-container ${darkMode ? "dark" : ""} ${isFullScreen ? "fullscreen" : ""}`}>
       <div className="chat-box">
-        {messages.map((msg, index) => (
-          <div key={index} className={`chat-bubble ${msg.sender}`}>
-            {msg.text}
+        <div className="top-bar">
+          <div className="left-icons">
+            <FaHistory onClick={() => setHistoryOpen(!historyOpen)} />
+            {darkMode ? <FaSun onClick={() => setDarkMode(false)} /> : <FaMoon onClick={() => setDarkMode(true)} />}
           </div>
-        ))}
-        {isTyping && <div className="typing-indicator">AI is typing...</div>}
-        <div ref={chatEndRef} />
-      </div>
+          <h1 className="title">AI PrepTalk</h1>
+          <div className="right-icons">
+            {isFullScreen ? (
+              <FaCompress onClick={() => setIsFullScreen(false)} />
+            ) : (
+              <FaExpand onClick={() => setIsFullScreen(true)} />
+            )}
+          </div>
+        </div>
 
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="Type your response..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage}>Send</button>
+        <div className="chat-content">
+          <div className={`history-panel ${historyOpen ? "open" : ""}`}>
+            <h3>Chat History</h3>
+            <ul>
+              <li>Mock Interview 1</li>
+              <li>Mock Interview 2</li>
+              <li>Mock Interview 3</li>
+            </ul>
+          </div>
+
+          <div className="chat-area">
+            {messages.map((msg, index) => (
+              <div key={index} className={`message ${msg.sender}`}>
+                {msg.text}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="chat-input">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
+            placeholder="Type your message..."
+          />
+          <button onClick={handleSend}>Send</button>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Chat;
