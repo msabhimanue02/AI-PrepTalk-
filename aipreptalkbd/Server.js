@@ -1,5 +1,8 @@
+require("dotenv").config(); // Load environment variables
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require("bcryptjs"); // For password hashing
 
 const app = express();
 
@@ -7,42 +10,77 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Temporary storage for users (resets when server restarts)
-const users = [];
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => console.log("✅ MongoDB Connected Successfully"))
+    .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// Signup Route
-app.post("/api/auth/signup", (req, res) => {
-  const { fullName, email, password } = req.body;
 
-  // Check if email already exists
-  if (users.some((user) => user.email === email)) {
-    return res.status(400).json({ message: "Email already in use. Try logging in." });
-  }
 
-  // Store new user
-  users.push({ fullName, email, password });
-  res.status(201).json({ message: "User registered successfully" });
+// User Schema & Model
+const userSchema = new mongoose.Schema({
+    fullName: String,
+    email: { type: String, unique: true },
+    password: String
 });
 
-// Login Route
-app.post("/api/auth/login", (req, res) => {
-  const { email, password } = req.body;
+const User = mongoose.model("User", userSchema);
 
-  // Check if user exists
-  const user = users.find((user) => user.email === email && user.password === password);
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email or password" });
-  }
+// Signup Route (Stores user in MongoDB)
+app.post("/api/auth/signup", async (req, res) => {
+    const { fullName, email, password } = req.body;
 
-  res.json({ message: "Login successful", user: { fullName: user.fullName, email: user.email } });
+    try {
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already in use. Try logging in." });
+        }
+
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create new user
+        const newUser = new User({ fullName, email, password: hashedPassword });
+        await newUser.save();
+
+        res.status(201).json({ message: "User registered successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// Login Route (Verifies user from MongoDB)
+app.post("/api/auth/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Compare password with stored hash
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        res.json({ message: "Login successful", user: { fullName: user.fullName, email: user.email } });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
 });
 
 // Chat Route (Placeholder)
 app.post("/api/chat", (req, res) => {
-  const { message } = req.body;
-  res.json({ response: `You said: ${message}` });
+    const { message } = req.body;
+    res.json({ response: `You said: ${message}` });
 });
 
 // Start Server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
