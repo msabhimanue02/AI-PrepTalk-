@@ -1,70 +1,52 @@
 import React, { useState } from "react";
 import "../styles/Chat.css";
-import { FaHistory, FaMoon, FaSun, FaExpand, FaCompress } from "react-icons/fa";
+import { FaPaperPlane, FaBars, FaSun, FaMoon } from "react-icons/fa";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { text: input, sender: "user" }, { text: "This is a bot response.", sender: "bot" }]);
+  const sendMessage = () => {
+    if (input.trim() === "") return;
+    setMessages([...messages, { text: input, sender: "user" }, { text: "AI Response...", sender: "ai" }]);
     setInput("");
   };
 
   return (
-    <div className={`chat-container ${darkMode ? "dark" : ""} ${isFullScreen ? "fullscreen" : ""}`}>
-      <div className="chat-box">
-        <div className="top-bar">
-          <div className="left-icons">
-            <FaHistory onClick={() => setHistoryOpen(!historyOpen)} />
-            {darkMode ? <FaSun onClick={() => setDarkMode(false)} /> : <FaMoon onClick={() => setDarkMode(true)} />}
-          </div>
-          <h1 className="title">AI PrepTalk</h1>
-          <div className="right-icons">
-            {isFullScreen ? (
-              <FaCompress onClick={() => setIsFullScreen(false)} />
-            ) : (
-              <FaExpand onClick={() => setIsFullScreen(true)} />
-            )}
-          </div>
+    <div className={`chat-container ${darkMode ? "dark" : "light"}`}>
+      <aside className={`sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
+        <button className="toggle-sidebar" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
+          <FaBars />
+        </button>
+        {sidebarExpanded && <p className="history">History</p>}
+      </aside>
+      <main className="chat-main">
+        <div className="chat-header">
+          <h1 className="title">AI-PrepTalk</h1>
+          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
         </div>
-
-        <div className="chat-content">
-          <div className={`history-panel ${historyOpen ? "open" : ""}`}>
-            <h3>Chat History</h3>
-            <ul>
-              <li>Mock Interview 1</li>
-              <li>Mock Interview 2</li>
-              <li>Mock Interview 3</li>
-            </ul>
-          </div>
-
-          <div className="chat-area">
-            {messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
-                {msg.text}
-              </div>
-            ))}
-          </div>
+        <div className="chat-window">
+          {messages.map((msg, index) => (
+            <div key={index} className={`message ${msg.sender}`}>{msg.text}</div>
+          ))}
         </div>
-
-        <div className="chat-input">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend();
-            }}
-            placeholder="Type your message..."
+        <div className="input-container">
+          <input 
+            type="text" 
+            className="chat-input" 
+            placeholder="Send a message..." 
+            value={input} 
+            onChange={(e) => setInput(e.target.value)} 
           />
-          <button onClick={handleSend}>Send</button>
+          <button className="send-button" onClick={sendMessage}>
+            <FaPaperPlane />
+          </button>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
