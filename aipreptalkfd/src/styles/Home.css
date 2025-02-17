@@ -60,6 +60,7 @@ body {
   width: 80%;
   margin: 50px auto;
   text-align: left;
+  flex-wrap: wrap;
 }
 
 .text-content h1 {
@@ -94,6 +95,7 @@ body {
 /* Hero Image */
 .image-container {
   max-width: 500px;
+  margin-top: 20px;
 }
 
 .hero-image {
@@ -108,6 +110,7 @@ body {
   display: flex;
   justify-content: space-around;
   margin-top: 50px;
+  flex-wrap: wrap;
 }
 
 .feature-card {
@@ -117,6 +120,7 @@ body {
   text-align: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  margin-bottom: 20px;
 }
 
 .feature-card h3 {
@@ -135,4 +139,26 @@ footer {
   color: white;
   text-align: center;
   width: 100%;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-image {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
+  .features-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature-card {
+    width: 80%;
+  }
 }

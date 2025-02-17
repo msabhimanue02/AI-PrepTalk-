@@ -6,12 +6,12 @@ const Home = () => {
   return (
     <div className="home-container">
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className="navbar" aria-label="Main Navigation">
         <div className="logo-text">AI-PrepTalk</div>
         <div className="nav-links">
-          <Link to="/about" className="nav-btn">About</Link>
-          <Link to="/signup" className="nav-btn">Sign Up</Link>
-          <Link to="/login" className="nav-btn">Sign In</Link>
+          <Link to="/about" className="nav-btn" aria-label="About page">About</Link>
+          <Link to="/signup" className="nav-btn" aria-label="Sign up page">Sign Up</Link>
+          <Link to="/login" className="nav-btn" aria-label="Sign in page">Sign In</Link>
         </div>
       </nav>
 
@@ -46,10 +46,10 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Footer
+      {/* Footer */}
       <footer>
         <p>© 2025 AI-PrepTalk. All rights reserved.</p>
-      </footer> */}
+      </footer>
     </div>
   );
 };

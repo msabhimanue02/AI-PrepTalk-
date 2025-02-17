@@ -7,7 +7,6 @@ const Chat = () => {
   const [chat, setChat] = useState([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
-
   const sendMessage = () => {
     if (message.trim() === "") return;
 
@@ -28,35 +27,36 @@ const Chat = () => {
   };
 
   return (
-    <div className={`chat-container }`}>
-      <aside className={`sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
-        <button className="toggle-sidebar" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
-          <FaBars />
-        </button>
-        {sidebarExpanded && <p className="history">History</p>}
-      </aside>
-      <main className="chat-main">
-        <div className="chat-header">
-          <h2>AI-PrepTalk</h2>
-
-        </div>
-        <div className="chat-box">
-          {chat.map((msg, index) => (
-            <div key={index} className={`message ${msg.sender}`}>{msg.text}</div>
-          ))}
-        </div>
-        <div className="input-area">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-          />
-          <button className="send-button" onClick={sendMessage}>
-            <FaPaperPlane />
+    <div className="chat-page">
+      <div className="chat-container">
+        <aside className={`sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
+          <button className="toggle-sidebar" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
+            <FaBars />
           </button>
-        </div>
-      </main>
+          {sidebarExpanded && <p className="history">History</p>}
+        </aside>
+        <main className="chat-main">
+          <div className="chat-header">
+            <h2>AI-PrepTalk</h2>
+          </div>
+          <div className="chat-box">
+            {chat.map((msg, index) => (
+              <div key={index} className={`message ${msg.sender}`}>{msg.text}</div>
+            ))}
+          </div>
+          <div className="input-area">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type a message..."
+            />
+            <button className="send-button" onClick={sendMessage}>
+              <FaPaperPlane />
+            </button>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

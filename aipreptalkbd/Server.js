@@ -12,8 +12,8 @@ app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/aipreptalk")
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
+    .then(() => console.log(" MongoDB Connected Successfully"))
+    .catch(err => console.error(" MongoDB Connection Error:", err));
 
 // User Schema & Model
 const userSchema = new mongoose.Schema({

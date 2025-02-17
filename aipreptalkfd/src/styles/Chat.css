@@ -1,21 +1,7 @@
-* {
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-}
+/* Chat.css */
 
-body {
-  background-color: #f7f7f8;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-size: 16px;
-  padding: 20px;
-}
-
-.chat-container {
+/* Scope all styles to chat-page */
+.chat-page .chat-container {
   background-color: #ffffff;
   border-radius: 10px;
   width: 500px;
@@ -28,7 +14,7 @@ body {
   max-height: 600px;
 }
 
-h2 {
+.chat-page h2 {
   text-align: center;
   color: #4a4a4a;
   font-size: 28px;
@@ -37,7 +23,7 @@ h2 {
   font-family: 'Roboto', sans-serif;
 }
 
-.chat-box {
+.chat-page .chat-box {
   flex-grow: 1;
   overflow-y: auto;
   margin-bottom: 20px;
@@ -46,7 +32,7 @@ h2 {
   flex-direction: column;
 }
 
-.message {
+.chat-page .message {
   padding: 12px 18px;
   margin-bottom: 12px;
   border-radius: 12px;
@@ -57,21 +43,21 @@ h2 {
   word-break: break-word;
 }
 
-.message.user {
+.chat-page .message.user {
   background-color: #1a73e8;
   color: white;
   align-self: flex-end;
   border-top-left-radius: 0;
 }
 
-.message.bot {
+.chat-page .message.bot {
   background-color: #f1f1f1;
   color: #333;
   align-self: flex-start;
   border-top-right-radius: 0;
 }
 
-.input-area {
+.chat-page .input-area {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -79,7 +65,7 @@ h2 {
   padding-top: 10px;
 }
 
-.input-area input {
+.chat-page .input-area input {
   width: 85%;
   padding: 12px 15px;
   font-size: 16px;
@@ -90,11 +76,11 @@ h2 {
   background-color: #fafafa;
 }
 
-.input-area input:focus {
+.chat-page .input-area input:focus {
   border-color: #1a73e8;
 }
 
-.send-button {
+.chat-page .send-button {
   background-color: #1a73e8;
   border: none;
   color: white;
@@ -105,16 +91,16 @@ h2 {
   margin-left: 10px;
 }
 
-.send-button:hover {
+.chat-page .send-button:hover {
   background-color: #1558b0;
 }
 
-.input-area input::placeholder {
+.chat-page .input-area input::placeholder {
   color: #bbb;
 }
 
-input:disabled,
-button:disabled {
+.chat-page input:disabled,
+.chat-page button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

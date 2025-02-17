@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Auth.css";
+import "../styles/Signup.css"; // Import local CSS specifically for SignUp component
 
 export default function Signup() {
   const [form, setForm] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
@@ -23,7 +23,7 @@ export default function Signup() {
     else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter a valid email";
 
     if (!form.password.trim()) newErrors.password = "Password is required";
-    else if (form.password.length < 6) newErrors.password = "Must be at least 6 characters";
+    else if (form.password.length < 4) newErrors.password = "Must be at least 6 characters";
 
     if (!form.confirmPassword.trim()) newErrors.confirmPassword = "Confirm Password is required";
     else if (form.confirmPassword !== form.password) newErrors.confirmPassword = "Passwords do not match";
@@ -53,22 +53,22 @@ export default function Signup() {
       const data = await response.json();
 
       if (data.message === "User registered successfully") {
-        setServerMessage("✅ Signup successful! Redirecting...");
+        setServerMessage(" Signup successful! Redirecting...");
         setTimeout(() => navigate("/login"), 2000);
         setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
       } else {
-        setServerMessage(`❌ ${data.message}`);
+        setServerMessage(` ${data.message}`);
       }
     } catch (error) {
-      setServerMessage("❌ Something went wrong. Try again.");
+      setServerMessage(" Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
+    <div className="signup-container">
+      <div className="signup-box">
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <input type="text" name="fullName" placeholder="Full Name" value={form.fullName} onChange={handleChange} />

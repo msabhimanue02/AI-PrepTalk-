@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Auth.css";
+import "../styles/Login.css"; // Import local CSS specifically for Login component
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -43,22 +43,22 @@ export default function Login() {
 
       if (data.message === "Login successful") {
         localStorage.setItem("user", JSON.stringify(data.user)); 
-        setServerMessage("✅ Login successful! Redirecting...");
+        setServerMessage(" Login successful! Redirecting...");
 
         setTimeout(() => navigate("/Form1"), 2000);
       } else {
-        setServerMessage(data.message || "❌ Incorrect email or password.");
+        setServerMessage(data.message || " Incorrect email or password.");
       }
     } catch (error) {
-      setServerMessage("❌ Something went wrong. Please try again.");
+      setServerMessage("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
+    <div className="login-container">
+      <div className="login-box">
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} disabled={isSubmitting} />
