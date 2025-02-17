@@ -60,7 +60,12 @@ body {
   width: 80%;
   margin: 50px auto;
   text-align: left;
-  flex-wrap: wrap;
+  flex-wrap: wrap;  /* Allows wrapping on small screens */
+}
+
+.text-content {
+  flex: 1;
+  max-width: 50%;
 }
 
 .text-content h1 {
@@ -94,8 +99,9 @@ body {
 
 /* Hero Image */
 .image-container {
-  max-width: 500px;
-  margin-top: 20px;
+  flex: 1;
+  max-width: 50%;
+  padding-left: 20px;
 }
 
 .hero-image {
@@ -148,7 +154,11 @@ footer {
     text-align: center;
   }
 
-  .hero-image {
+  .text-content {
+    max-width: 100%;
+  }
+
+  .image-container {
     max-width: 100%;
     margin-top: 20px;
   }

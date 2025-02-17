@@ -1,6 +1,13 @@
-/* Chat.css */
+/* General container for the chat page */
+.chat-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #f8f9fa; /* Optional: light background for the page */
+}
 
-/* Scope all styles to chat-page */
+/* Chat container */
 .chat-page .chat-container {
   background-color: #ffffff;
   border-radius: 10px;
@@ -14,6 +21,7 @@
   max-height: 600px;
 }
 
+/* Heading */
 .chat-page h2 {
   text-align: center;
   color: #4a4a4a;
@@ -23,6 +31,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Chat box */
 .chat-page .chat-box {
   flex-grow: 1;
   overflow-y: auto;
@@ -32,6 +41,7 @@
   flex-direction: column;
 }
 
+/* Message styles */
 .chat-page .message {
   padding: 12px 18px;
   margin-bottom: 12px;
@@ -57,6 +67,7 @@
   border-top-right-radius: 0;
 }
 
+/* Input area */
 .chat-page .input-area {
   display: flex;
   width: 100%;
@@ -65,6 +76,7 @@
   padding-top: 10px;
 }
 
+/* Input field */
 .chat-page .input-area input {
   width: 85%;
   padding: 12px 15px;
@@ -76,10 +88,12 @@
   background-color: #fafafa;
 }
 
+/* Focused input field */
 .chat-page .input-area input:focus {
   border-color: #1a73e8;
 }
 
+/* Send button */
 .chat-page .send-button {
   background-color: #1a73e8;
   border: none;
@@ -91,14 +105,17 @@
   margin-left: 10px;
 }
 
+/* Send button hover */
 .chat-page .send-button:hover {
   background-color: #1558b0;
 }
 
+/* Placeholder color */
 .chat-page .input-area input::placeholder {
   color: #bbb;
 }
 
+/* Disabled input and buttons */
 .chat-page input:disabled,
 .chat-page button:disabled {
   opacity: 0.5;
