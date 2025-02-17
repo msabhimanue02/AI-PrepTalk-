@@ -1,4 +1,4 @@
-
+// require("dotenv").config(); // Load environment variables
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -14,8 +14,6 @@ app.use(cors());
 mongoose.connect("mongodb://127.0.0.1:27017/aipreptalk")
     .then(() => console.log("✅ MongoDB Connected Successfully"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
-
-
 
 // User Schema & Model
 const userSchema = new mongoose.Schema({

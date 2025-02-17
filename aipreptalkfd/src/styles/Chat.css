@@ -1,151 +1,120 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f7f7f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 16px;
+  padding: 20px;
+}
+
 .chat-container {
-  display: flex;
-  height: 100vh;
-  transition: background 0.3s ease;
-}
-
-.chat-container.dark {
-  background: #181818;
-  color: white;
-}
-
-.chat-container.light {
-  background: #f0f0f0;
-  color: black;
-}
-
-.sidebar {
-  width: 20%;
-  background: #1e1e1e;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-}
-
-.sidebar.collapsed {
-  width: 60px;
-  overflow: hidden;
-}
-
-.toggle-sidebar {
-  background: none;
-  color: white;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.chat-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-}
-
-.chat-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.theme-toggle {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.chat-window {
-  flex: 1;
-  width: 100%;
-  max-width: 800px;
-  background: #333;
-  padding: 20px;
+  background-color: #ffffff;
   border-radius: 10px;
-  overflow-y: auto;
+  width: 500px;
+  max-width: 100%;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  height: 90vh;
+  max-height: 600px;
 }
 
-.chat-container.light .chat-window {
-  background: #ffffff;
-  border: 1px solid #ddd;
+h2 {
+  text-align: center;
+  color: #4a4a4a;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.chat-box {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
-  padding: 10px;
-  border-radius: 5px;
-  max-width: 60%;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  max-width: 75%;
+  word-wrap: break-word;
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .message.user {
-  background: #0078ff;
+  background-color: #1a73e8;
   color: white;
   align-self: flex-end;
+  border-top-left-radius: 0;
 }
 
-.message.ai {
-  background: #444;
-  color: white;
+.message.bot {
+  background-color: #f1f1f1;
+  color: #333;
   align-self: flex-start;
+  border-top-right-radius: 0;
 }
 
-.chat-container.light .message.ai {
-  background: #e0e0e0;
-  color: black;
-}
-
-.input-container {
+.input-area {
   display: flex;
-  align-items: center;
   width: 100%;
-  max-width: 800px;
-  background: #1e1e1e;
-  padding: 10px;
-  border-radius: 30px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
 }
 
-.chat-container.light .input-container {
-  background: #ffffff;
-  border: 1px solid #ddd;
-}
-
-.chat-input {
-  flex: 1;
-  padding: 12px;
-  border: none;
+.input-area input {
+  width: 85%;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 20px;
   outline: none;
-  background: transparent;
-  color: white;
-  font-size: 1rem;
+  transition: border 0.3s ease;
+  background-color: #fafafa;
 }
 
-.chat-container.light .chat-input {
-  color: black;
+.input-area input:focus {
+  border-color: #1a73e8;
 }
 
 .send-button {
-  background: #0078ff;
+  background-color: #1a73e8;
   border: none;
   color: white;
-  padding: 12px 15px;
-  border-radius: 50%;
+  padding: 12px 18px;
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
   margin-left: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
 }
 
 .send-button:hover {
-  background: #005bbf;
+  background-color: #1558b0;
+}
+
+.input-area input::placeholder {
+  color: #bbb;
+}
+
+input:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

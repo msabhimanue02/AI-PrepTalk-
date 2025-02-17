@@ -1,21 +1,34 @@
 import React, { useState } from "react";
 import "../styles/Chat.css";
-import { FaPaperPlane, FaBars, FaSun, FaMoon } from "react-icons/fa";
+import { FaPaperPlane, FaBars } from "react-icons/fa";
 
 const Chat = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [message, setMessage] = useState("");
+  const [chat, setChat] = useState([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+
 
   const sendMessage = () => {
-    if (input.trim() === "") return;
-    setMessages([...messages, { text: input, sender: "user" }, { text: "AI Response...", sender: "ai" }]);
-    setInput("");
+    if (message.trim() === "") return;
+
+    const userMessage = { sender: "user", text: message };
+    setChat([...chat, userMessage]);
+    setMessage("");
+
+    fetch("http://localhost:5000/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setChat((prevChat) => [...prevChat, { sender: "bot", text: data.response }]);
+      })
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
-    <div className={`chat-container ${darkMode ? "dark" : "light"}`}>
+    <div className={`chat-container }`}>
       <aside className={`sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
         <button className="toggle-sidebar" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
           <FaBars />
@@ -24,23 +37,20 @@ const Chat = () => {
       </aside>
       <main className="chat-main">
         <div className="chat-header">
-          <h1 className="title">AI-PrepTalk</h1>
-          <button className="theme-toggle" onClick={() => setDarkMode(!darkMode)}>
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
+          <h2>AI-PrepTalk</h2>
+
         </div>
-        <div className="chat-window">
-          {messages.map((msg, index) => (
+        <div className="chat-box">
+          {chat.map((msg, index) => (
             <div key={index} className={`message ${msg.sender}`}>{msg.text}</div>
           ))}
         </div>
-        <div className="input-container">
-          <input 
-            type="text" 
-            className="chat-input" 
-            placeholder="Send a message..." 
-            value={input} 
-            onChange={(e) => setInput(e.target.value)} 
+        <div className="input-area">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
           />
           <button className="send-button" onClick={sendMessage}>
             <FaPaperPlane />
