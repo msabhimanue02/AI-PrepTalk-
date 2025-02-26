@@ -20,7 +20,7 @@ AI-PrepTalk is an intelligent mock interview platform designed to help job seeke
 📌 Database
     MongoDB
 # Installation & Setup
-📌Prerequisites
+📌Prerequisites:
    Ensure you have the following installed:
 
     Node.js
