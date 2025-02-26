@@ -21,14 +21,22 @@ AI-PrepTalk is an intelligent mock interview platform designed to help job seeke
 
 # Tech Stack
 📌 Frontend
+
     React
+    HTML
     CSS
+
 📌 Backend
+
     Node,js,Express.js
+
 📌 Database
+
     MongoDB
+
 # Installation & Setup
 📌Prerequisites:
+
    Ensure you have the following installed:
 
     Node.js
