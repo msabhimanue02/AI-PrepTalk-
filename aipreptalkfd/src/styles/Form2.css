@@ -1,14 +1,25 @@
 /* Form2.css */
 
-/* Scope all styles to form2-page */
-.form2-page .form-container {
+/* Full-page background with a gradient */
+.form2-page {
   width: 100vw;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #bec7d7, #1e3c72);
 }
 
+/* Form container */
+.form2-page .form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Form box with styling */
 .form2-page .form-box {
   background: #ffffff;
   padding: 40px;
@@ -20,11 +31,13 @@
   animation: fadeIn 0.5s ease-in-out;
 }
 
+/* Fade-in animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Form heading */
 .form2-page h2 {
   font-size: 1.8rem;
   font-weight: 700;
@@ -32,6 +45,7 @@
   margin-bottom: 20px;
 }
 
+/* Form group styling */
 .form2-page .form-group {
   display: flex;
   flex-direction: column;
@@ -39,31 +53,54 @@
   margin-bottom: 20px;
 }
 
+/* Labels */
 .form2-page label {
   font-size: 1rem;
   color: #333;
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
+/* Input fields */
 .form2-page input,
 .form2-page select {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   transition: all 0.3s;
+  background: #f9f9f9;
 }
 
+/* Input focus effect */
 .form2-page input:focus,
 .form2-page select:focus {
   border-color: #2a5298;
   outline: none;
+  background: #fff;
+  box-shadow: 0 0 5px rgba(42, 82, 152, 0.3);
 }
 
+/* Resume file info */
+.form2-page .file-info {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+/* Error message */
+.form2-page small {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+/* Submit button */
 .form2-page button {
   width: 100%;
-  background: linear-gradient(135deg, #2a5298, #1e3c72);
+  background: linear-gradient(135deg, #ff7eb3, #ff4b2b);
   color: white;
   padding: 12px;
   font-size: 1.2rem;
@@ -74,8 +111,9 @@
   font-weight: 700;
 }
 
+/* Button hover effect */
 .form2-page button:hover {
-  background: linear-gradient(135deg, #1e3c72, #163c73);
+  background: linear-gradient(135deg, #ff4b2b, #ff7eb3);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }

@@ -6,13 +6,13 @@ const Form2 = () => {
   const [resume, setResume] = useState(null);
   const [jobRole, setJobRole] = useState("");
   const [customJobRole, setCustomJobRole] = useState("");
-  // const [timeLimit, setTimeLimit] = useState("");
-  // const [customTimeLimit, setCustomTimeLimit] = useState("");
+  const [timeLimit, setTimeLimit] = useState("");
+  const [customTimeLimit, setCustomTimeLimit] = useState("");
 
   const navigate = useNavigate();
 
   const jobRoles = ["Software Engineer", "Data Scientist", "Product Manager", "UI/UX Designer", "Marketing Specialist"];
-  // const timeLimits = ["15 minutes", "30 minutes", "45 minutes", "60 minutes"];
+  const timeLimits = ["15 minutes", "30 minutes", "45 minutes", "60 minutes"];
 
   const handleResumeUpload = (e) => {
     const file = e.target.files[0];
@@ -29,9 +29,9 @@ const Form2 = () => {
     
     // Use the custom job role if "Other" is selected
     const finalJobRole = jobRole === "Other" ? customJobRole : jobRole;
-    // const finalTimeLimit = timeLimit === "Other" ? customTimeLimit : timeLimit;
+    const finalTimeLimit = timeLimit === "Other" ? customTimeLimit : timeLimit;
 
-    if (!finalJobRole) {
+    if (!finalJobRole || !finalTimeLimit) {
       alert("Please fill out all required fields.");
       return;
     }
@@ -80,7 +80,7 @@ const Form2 = () => {
             </div>
 
             {/* Interview Time Limit Selection */}
-            {/* <div className="form-group">
+            <div className="form-group">
               <label>Interview Time Limit:</label>
               <select value={timeLimit} onChange={(e) => setTimeLimit(e.target.value)} required>
                 <option value="">Select time limit</option>
@@ -98,9 +98,9 @@ const Form2 = () => {
                   required 
                 />
               )}
-            </div> */}
+            </div>
 
-            <button type="submit" disabled={!resume || !jobRole }>Submit</button>
+            <button type="submit" disabled={!resume || !jobRole || !timeLimit}>Submit</button>
           </form>
         </div>
       </div>

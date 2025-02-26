@@ -45,7 +45,7 @@ export default function Login() {
         localStorage.setItem("user", JSON.stringify(data.user)); 
         setServerMessage(" Login successful! Redirecting...");
 
-        setTimeout(() => navigate("/Form1"), 2000);
+        setTimeout(() => navigate("/Form2"), 2000);
       } else {
         setServerMessage(data.message || " Incorrect email or password.");
       }
