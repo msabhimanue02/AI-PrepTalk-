@@ -1,9 +1,8 @@
+// require("dotenv").config(); // Load environment variables
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const multer = require("multer"); // For file uploads
-const pdfParse = require("pdf-parse"); // For extracting text from PDFs
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); // For password hashing
 
 const app = express();
 
@@ -11,42 +10,73 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Set up Multer for file uploads (stores in memory)
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/aipreptalk")
     .then(() => console.log(" MongoDB Connected Successfully"))
     .catch(err => console.error(" MongoDB Connection Error:", err));
 
-// Temporary storage for extracted text & job role
-let extractedPdfText = "";
-let storedJobRole = "";
+// User Schema & Model
+const userSchema = new mongoose.Schema({
+    fullName: String,
+    email: { type: String, unique: true },
+    password: String
+});
 
-// Resume Upload Route (Extracts text and stores job role temporarily)
-app.post("/api/upload", upload.single("resume"), async (req, res) => {
+const User = mongoose.model("User", userSchema);
+
+// Signup Route (Stores user in MongoDB)
+app.post("/api/auth/signup", async (req, res) => {
+    const { fullName, email, password } = req.body;
+
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded" });
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already in use. Try logging in." });
         }
 
-        const textData = await pdfParse(req.file.buffer);
-        extractedPdfText = textData.text; // Store extracted PDF text
-        storedJobRole = req.body.jobRole; // Store job role
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        res.json({ message: "PDF processed successfully", text: extractedPdfText, jobRole: storedJobRole });
+        // Create new user
+        const newUser = new User({ fullName, email, password: hashedPassword });
+        await newUser.save();
+
+        res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
-        console.error("Error processing PDF:", error);
-        res.status(500).json({ message: "Failed to process PDF", error });
+        res.status(500).json({ message: "Server error", error });
     }
 });
 
-// API to retrieve temporarily stored data
-app.get("/api/temp-data", (req, res) => {
-    res.json({ extractedText: extractedPdfText, jobRole: storedJobRole });
+// Login Route (Verifies user from MongoDB)
+app.post("/api/auth/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Compare password with stored hash
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        res.json({ message: "Login successful", user: { fullName: user.fullName, email: user.email } });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// Chat Route (Placeholder)
+app.post("/api/chat", (req, res) => {
+    const { message } = req.body;
+    res.json({ response: `You said: ${message}` });
+
 });
 
 // Start Server
-const PORT = 5000;
+const PORT =  5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
