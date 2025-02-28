@@ -1,18 +1,41 @@
-import React, { useState } from "react";
-import "../styles/Chat.css";
-import { FaPaperPlane, FaBars } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
+import styles from "../styles/Chat.module.css";
+import { FaPaperPlane, FaBars, FaSun, FaMoon, FaComment } from "react-icons/fa";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
-  const [chat, setChat] = useState([]);
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [messages, setMessages] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const chatBoxRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [message]);
+
+  const toggleTheme = () => {
+    setIsDarkTheme(!isDarkTheme);
+  };
 
   const sendMessage = () => {
     if (message.trim() === "") return;
 
-    const userMessage = { sender: "user", text: message };
-    setChat([...chat, userMessage]);
+    setMessages(prev => [...prev, { text: message }]);
     setMessage("");
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
 
     fetch("http://localhost:5000/", {
       method: "POST",
@@ -21,42 +44,94 @@ const Chat = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setChat((prevChat) => [...prevChat, { sender: "bot", text: data.response }]);
+        setMessages(prev => [...prev, { text: data.response }]);
       })
       .catch((error) => console.error("Error:", error));
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="chat-page">
-      <div className="chat-container">
-        <aside className={`sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
-          <button className="toggle-sidebar" onClick={() => setSidebarExpanded(!sidebarExpanded)}>
-            <FaBars />
-          </button>
-          {sidebarExpanded && <p className="history">History</p>}
-        </aside>
-        <main className="chat-main">
-          <div className="chat-header">
-            <h2>AI-PrepTalk</h2>
-          </div>
-          <div className="chat-box">
-            {chat.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>{msg.text}</div>
-            ))}
-          </div>
-          <div className="input-area">
-            <input
-              type="text"
+    <div className={`${styles.page} ${!isDarkTheme ? styles.lightTheme : ''}`}>
+      <button 
+        className={styles.toggleSidebar} 
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        <FaBars />
+      </button>
+
+      <button 
+        className={styles.themeToggle} 
+        onClick={toggleTheme}
+        aria-label="Toggle theme"
+      >
+        {isDarkTheme ? <FaSun /> : <FaMoon />}
+      </button>
+
+      <aside className={`${styles.sidebar} ${!isSidebarOpen ? styles.sidebarCollapsed : ''}`}>
+        <div className={styles.sidebarHeader}>
+          <h2>Chat History</h2>
+        </div>
+        <div className={styles.history}>
+          {messages.map((msg, index) => (
+            <div key={index} className={styles.historyItem}>
+              <FaComment /> {msg.text.substring(0, 30)}...
+            </div>
+          ))}
+        </div>
+      </aside>
+      
+      <main className={styles.mainContent}>
+        <div className={styles.chatHeader}>
+          <h1 className={styles.chatTitle}>AI-PrepTalk</h1>
+        </div>
+
+        <div className={styles.chatBox} ref={chatBoxRef}>
+          {messages.map((msg, index) => (
+            <div 
+              key={index} 
+              className={styles.messageGroup}
+            >
+              <div className={styles.messageWrapper}>
+                <div className={styles.avatar}>
+                  👤
+                </div>
+                <div className={styles.message}>
+                  {msg.text}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className={styles.inputArea}>
+          <div className={styles.inputWrapper}>
+            <textarea
+              ref={textareaRef}
+              className={styles.input}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message..."
+              onKeyDown={handleKeyDown}
+              placeholder="Send a message..."
+              rows="1"
             />
-            <button className="send-button" onClick={sendMessage}>
+            <button 
+              className={styles.sendButton} 
+              onClick={sendMessage}
+              disabled={!message.trim()}
+              aria-label="Send message"
+            >
               <FaPaperPlane />
             </button>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
