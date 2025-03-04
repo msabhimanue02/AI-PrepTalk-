@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css"; // Import local CSS specifically for Login component
 
+
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -9,21 +10,26 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
 
   const validateForm = () => {
     const newErrors = {};
     if (!form.email.trim()) newErrors.email = "Email is required";
     else if (!/^\S+@\S+\.\S+$/.test(form.email)) newErrors.email = "Enter a valid email";
 
+
     if (!form.password.trim()) newErrors.password = "Password is required";
-    else if (form.password.length < 6) newErrors.password = "Must be at least 6 characters";
+    else if (form.password.length < 4) newErrors.password = "Must be at least 6 characters";
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

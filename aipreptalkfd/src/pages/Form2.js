@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Select from "react-select";
 import "../styles/Form2.css";
 
 const Form2 = () => {
   const [resume, setResume] = useState(null);
-  const [jobRole, setJobRole] = useState("");
+  const [jobRole, setJobRole] = useState(null);
+  const [jobRoles, setJobRoles] = useState([]);
   const navigate = useNavigate();
 
-  const jobRoles = ["Software Engineer", "Data Scientist", "Product Manager", "UI/UX Designer", "Marketing Specialist"];
+  useEffect(() => {
+    const fetchJobRoles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/roles");
+        setJobRoles(response.data.titles.map(role => ({ value: role, label: role })));
+      } catch (error) {
+        console.error("Error fetching job roles:", error);
+      }
+    };
+    fetchJobRoles();
+  }, []);
 
   const handleResumeUpload = (e) => {
     const file = e.target.files[0];
@@ -29,7 +41,7 @@ const Form2 = () => {
 
     const formData = new FormData();
     formData.append("resume", resume);
-    formData.append("jobRole", jobRole);
+    formData.append("jobRole", jobRole.value);
 
     try {
       await axios.post("http://localhost:5000/api/upload-resume", formData, {
@@ -62,12 +74,14 @@ const Form2 = () => {
             </div>
             <div className="form-group">
               <label>Job Role:</label>
-              <select value={jobRole} onChange={(e) => setJobRole(e.target.value)} required>
-                <option value="">Select a job role</option>
-                {jobRoles.map((role) => (
-                  <option key={role} value={role}>{role}</option>
-                ))}
-              </select>
+              <Select 
+                options={jobRoles} 
+                value={jobRole} 
+                onChange={setJobRole} 
+                placeholder="Search or select a job role" 
+                isSearchable 
+                required
+              />
             </div>
             <button type="submit" disabled={!resume || !jobRole}>Submit</button>
           </form>

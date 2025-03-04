@@ -18,7 +18,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
 mongoose.connect("mongodb://127.0.0.1:27017/aipreptalk")
     .then(() => console.log("MongoDB Connected Successfully"))
     .catch(err => console.error("MongoDB Connection Error:", err));
@@ -110,6 +109,24 @@ app.post("/api/upload-resume", upload.single("resume"), async (req, res) => {
 app.post("/api/chat", (req, res) => {
     const { message } = req.body;
     res.json({ response: `You said: ${message}` });
+});
+
+// Get all records from jobs collection with active=true
+// Return titles as an array
+app.get("/api/roles", async (req, res) => {
+    try {
+        const jobs = await mongoose.connection.db.collection("jobs")
+            .find({ active: true })
+            .project({ title: 1, _id: 0 }) // Select only the 'title' field
+            .toArray();
+
+        const jobTitles = jobs.map(job => job.title);
+
+        res.json({ titles: jobTitles });
+    } catch (error) {
+        console.error("Error fetching job titles:", error);
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 // Start Server
