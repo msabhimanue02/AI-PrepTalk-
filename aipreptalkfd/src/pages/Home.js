@@ -20,6 +20,7 @@ const Home = () => {
       <nav className="navbar" aria-label="Main Navigation">
         <div className="logo-text">AI-PrepTalk</div>
         <div className="nav-links">
+        <Link to="/" className="nav-btn" aria-label="Admin Dashboard">Admin</Link>
           <Link to="/about" className="nav-btn" aria-label="About page">About</Link>
           {user ? (
             <>
