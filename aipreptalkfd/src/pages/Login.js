@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Login.css"; // Import local CSS specifically for Login component
 
 
@@ -9,6 +10,7 @@ export default function Login() {
   const [serverMessage, setServerMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
 
   const handleChange = (e) => {
@@ -39,24 +41,12 @@ export default function Login() {
     setServerMessage("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      await login(form.email, form.password);
+      setServerMessage("Login successful! Redirecting...");
 
-      const data = await response.json();
-
-      if (data.message === "Login successful") {
-        localStorage.setItem("user", JSON.stringify(data.user)); 
-        setServerMessage(" Login successful! Redirecting...");
-
-        setTimeout(() => navigate("/Form2"), 2000);
-      } else {
-        setServerMessage(data.message || " Incorrect email or password.");
-      }
+      setTimeout(() => navigate("/Form2"), 2000);
     } catch (error) {
-      setServerMessage("Something went wrong. Please try again.");
+      setServerMessage(/*error.message ||*/  "Login failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

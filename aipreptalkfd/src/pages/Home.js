@@ -1,18 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Home.css";
 
 const Home = () => {
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Navbar */}
       <nav className="navbar" aria-label="Main Navigation">
         <div className="logo-text">AI-PrepTalk</div>
         <div className="nav-links">
-          <Link to="#" className="nav-btn" aria-label="About page">Admin</Link>
           <Link to="/about" className="nav-btn" aria-label="About page">About</Link>
-          <Link to="/signup" className="nav-btn" aria-label="Sign up page">Sign Up</Link>
-          <Link to="/login" className="nav-btn" aria-label="Sign in page">Sign In</Link>
+          {user ? (
+            <>
+              <Link to="/Form2" className="nav-btn">Dashboard</Link>
+              <button onClick={handleLogout} className="nav-btn">Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/signup" className="nav-btn" aria-label="Sign up page">Sign Up</Link>
+              <Link to="/login" className="nav-btn" aria-label="Sign in page">Sign In</Link>
+            </>
+          )}
         </div>
       </nav>
 

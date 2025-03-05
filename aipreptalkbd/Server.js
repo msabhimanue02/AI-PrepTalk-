@@ -6,14 +6,25 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { PDFLoader } = require("@langchain/community/document_loaders/fs/pdf");
-
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const session = require("express-session");
 const app = express();
 
 app.use(express.json());
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 const corsOptions = {
     origin: "http://localhost:3000",
     methods: "GET,POST",
+    credentials: true,
     allowedHeaders: "Content-Type",
 };
 app.use(cors(corsOptions));
@@ -30,6 +41,49 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+// Passport Configuration
+passport.use(new LocalStrategy(
+    { usernameField: 'email' },
+    async (email, password, done) => {
+        try {
+            const user = await User.findOne({ email });
+            if (!user) {
+                return done(null, false, { message: 'Invalid email or password' });
+            }
+
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return done(null, false, { message: 'Invalid email or password' });
+            }
+
+            return done(null, user);
+        } catch (error) {
+            return done(error);
+        }
+    }
+));
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error);
+    }
+});
+
+// Middleware to check if user is authenticated
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.status(401).json({ message: 'Unauthorized' });
+};
+
 app.post("/api/auth/signup", async (req, res) => {
     const { fullName, email, password } = req.body;
 
@@ -43,30 +97,39 @@ app.post("/api/auth/signup", async (req, res) => {
         const newUser = new User({ fullName, email, password: hashedPassword });
         await newUser.save();
 
-        res.status(201).json({ message: "User registered successfully" });
+        req.login(newUser, (err) => {
+            if (err) {
+                return res.status(500).json({ message: "Error logging in after signup", error: err });
+            }
+            res.status(201).json({ message: "User registered successfully", user: { fullName: newUser.fullName, email: newUser.email } });
+        });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
 });
 
-app.post("/api/auth/login", async (req, res) => {
-    const { email, password } = req.body;
+app.post("/api/auth/login", passport.authenticate('local'), (req, res) => {
+    res.json({ 
+        message: "Login successful", 
+        user: { 
+            fullName: req.user.fullName, 
+            email: req.user.email 
+        } 
+    });
+});
 
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
+app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Error logging out", error: err });
         }
+        res.json({ message: "Logged out successfully" });
+    });
+});
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-
-        res.json({ message: "Login successful", user: { fullName: user.fullName, email: user.email } });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
-    }
+// Protected route example
+app.get("/api/auth/user", isAuthenticated, (req, res) => {
+    res.json({ user: { fullName: req.user.fullName, email: req.user.email } });
 });
 
 const storage = multer.diskStorage({

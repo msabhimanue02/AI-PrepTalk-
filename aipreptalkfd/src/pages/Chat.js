@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import styles from "../styles/Chat.module.css";
-import { FaPaperPlane, FaBars, FaSun, FaMoon, FaComment } from "react-icons/fa";
+import { FaPaperPlane, FaBars, FaSun, FaMoon, FaComment, FaSignOutAlt } from "react-icons/fa";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
@@ -9,6 +11,8 @@ const Chat = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(true);
   const chatBoxRef = useRef(null);
   const textareaRef = useRef(null);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -56,6 +60,15 @@ const Chat = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className={`${styles.page} ${!isDarkTheme ? styles.lightTheme : ''}`}>
       <button 
@@ -72,6 +85,14 @@ const Chat = () => {
         aria-label="Toggle theme"
       >
         {isDarkTheme ? <FaSun /> : <FaMoon />}
+      </button>
+
+      <button 
+        className={styles.logoutButton}
+        onClick={handleLogout}
+        aria-label="Logout"
+      >
+        <FaSignOutAlt />
       </button>
 
       <aside className={`${styles.sidebar} ${!isSidebarOpen ? styles.sidebarCollapsed : ''}`}>

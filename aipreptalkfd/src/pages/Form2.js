@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Select from "react-select";
 import "../styles/Form2.css";
@@ -9,6 +10,7 @@ const Form2 = () => {
   const [jobRole, setJobRole] = useState(null);
   const [jobRoles, setJobRoles] = useState([]);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const fetchJobRoles = async () => {
@@ -60,8 +62,18 @@ const Form2 = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className="form2-page">
+      <button onClick={handleLogout} className="logout-btn">Logout</button>
       <div className="form-container">
         <div className="form-box">
           <h2>Upload Your Resume</h2>
