@@ -10,6 +10,22 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const app = express();
+// import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
+
+
+
+// const prompt = ChatPromptTemplate.fromMessages([
+//   ["system", 
+//     "You are a professional AI interviewer assessing candidates based on their job level and resume.\n\n" + 
+//     "Candidate Name: {full_name}\n" +
+//     "Applying for: {title}\n\n" +
+//     "Job Description:\n{description}\n\n" +
+//     "Candidate Resume:\n{storedResumes}\n\n" +
+//     "Ask relevant interview questions based on their background and the job role."
+//   ],
+//   new MessagesPlaceholder("chat_history"),
+//   ["human", "{question}"],
+// ]);
 
 app.use(express.json());
 app.use(session({

@@ -24,7 +24,7 @@ const Home = () => {
           <Link to="/about" className="nav-btn" aria-label="About page">About</Link>
           {user ? (
             <>
-              <Link to="/Form2" className="nav-btn">Dashboard</Link>
+              <Link to="/Form2" className="nav-btn">Prev</Link>
               <button onClick={handleLogout} className="nav-btn">Logout</button>
             </>
           ) : (
