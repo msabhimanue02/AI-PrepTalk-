@@ -9,23 +9,9 @@ const { PDFLoader } = require("@langchain/community/document_loaders/fs/pdf");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
+const Job = require("./models/Job");
+const UserProfile = require("./models/UserProfile");
 const app = express();
-// import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
-
-
-
-// const prompt = ChatPromptTemplate.fromMessages([
-//   ["system", 
-//     "You are a professional AI interviewer assessing candidates based on their job level and resume.\n\n" + 
-//     "Candidate Name: {full_name}\n" +
-//     "Applying for: {title}\n\n" +
-//     "Job Description:\n{description}\n\n" +
-//     "Candidate Resume:\n{storedResumes}\n\n" +
-//     "Ask relevant interview questions based on their background and the job role."
-//   ],
-//   new MessagesPlaceholder("chat_history"),
-//   ["human", "{question}"],
-// ]);
 
 app.use(express.json());
 app.use(session({
@@ -160,25 +146,33 @@ const upload = multer({ storage });
 
 let storedResumes = [];
 
-app.post("/api/upload-resume", upload.single("resume"), async (req, res) => {
+app.post("/api/upload-resume", isAuthenticated, upload.single("resume"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
         }
 
         const filePath = path.join(__dirname, req.file.path);
+        const jobRole = req.body.jobRole;
 
         const loader = new PDFLoader(filePath, { splitPages: false });
         const docs = await loader.load();
         const pdfText = docs.map(doc => doc.pageContent).join("\n");
 
-        storedResumes.push({ pdfText });
-
-        console.log("Extracted Text:", pdfText);
+        // Create or update user profile
+        await UserProfile.findOneAndUpdate(
+            { userId: req.user._id },
+            { 
+                userId: req.user._id,
+                resume: pdfText,
+                selectedJobTitle: jobRole
+            },
+            { upsert: true, new: true }
+        );
 
         fs.unlinkSync(filePath);
 
-        res.json({ message: "Resume uploaded and extracted successfully!", extractedText: pdfText });
+        res.json({ message: "Resume uploaded and profile updated successfully!" });
     } catch (error) {
         console.error("Error processing PDF:", error);
         res.status(500).json({ error: "Failed to process PDF" });
@@ -208,6 +202,39 @@ app.get("/api/roles", async (req, res) => {
     }
 });
 
+// Get job description for a specific title
+app.get("/api/job-description/:title", isAuthenticated, async (req, res) => {
+    try {
+        const job = await Job.findOne({ title: req.params.title, active: true });
+        if (!job) {
+            return res.status(404).json({ message: "Job not found" });
+        }
+        res.json({ description: job.description });
+    } catch (error) {
+        console.error("Error fetching job description:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Get user profile data
+app.get("/api/user-profile", isAuthenticated, async (req, res) => {
+    try {
+        const profile = await UserProfile.findOne({ userId: req.user._id });
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" });
+        }
+        res.json(profile);
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+const interviewRoutes = require("./routes/interview");
+app.use("/api/interview", interviewRoutes);
+
 // Start Server
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

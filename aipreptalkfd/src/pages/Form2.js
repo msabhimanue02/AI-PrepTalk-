@@ -15,7 +15,9 @@ const Form2 = () => {
   useEffect(() => {
     const fetchJobRoles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/roles");
+        const response = await axios.get("http://localhost:5000/api/roles", {
+          withCredentials: true
+        });
         setJobRoles(response.data.titles.map(role => ({ value: role, label: role })));
       } catch (error) {
         console.error("Error fetching job roles:", error);
@@ -48,6 +50,7 @@ const Form2 = () => {
     try {
       await axios.post("http://localhost:5000/api/upload-resume", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true
       });
 
       alert("Form submitted successfully!");
